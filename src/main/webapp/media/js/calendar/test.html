@@ -1,0 +1,17 @@
+<html>
+<head>
+</head>
+<script language="JavaScript" type="text/JavaScript" >
+	function inputDate(para)
+	{
+		window.showModalDialog('calendar.html',para,'dialogheight=218px;dialogwidth=208px;status=no;edge=raised;scroll=no');
+	}
+</script>
+
+<body>
+
+<input id="Test" name="Test" size="30" type="text">
+<img src="calendar.gif" onclick="inputDate(Test);" style="cursor:hand">
+<img src="calendar.gif" onclick="window.showModalDialog('calendar.html',Test,'dialogheight=218px;dialogwidth=208px;status=no;edge=raised;scroll=no')" style="cursor:hand">
+</body>
+</html>

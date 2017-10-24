@@ -1,0 +1,79 @@
+html,body{
+	width: 100%;
+	padding:0!important;
+	margin: 0!important;
+	background-color:#ffffff;
+}
+body, p, table, tr, td, input{
+	font-size:12px;
+	font-family:MS Sans Serif,Tahoma;
+}
+.BodyBackColor{
+	text-align: center;
+}
+div#divCalendar{
+	width: 100%;
+	min-width: 246px;
+	margin: 0 auto;
+}
+.MainBackColor{
+	width:100%;
+	background-color:#ffffff;
+}
+.MainBackColor td{
+	vertical-align: middle!important;
+}
+.LabelInput{
+	background-color:Transparent;
+	border:none;
+	color:#000000;
+	font-weight:700;
+	width:100%;
+	vertical-align: middle;
+}
+.ComboInput{
+	border:1px solid #d1d1d1;
+	height:24px;
+	padding:3px 2px;
+	width:100%;
+	vertical-align: middle;
+	margin: 4px auto;
+}
+#dateTable{
+	border: 1px solid #c5dbe7;
+}
+.CalendarHeader{
+	background-color:#cee2ed;
+	height:22px;
+	font-weight:700;
+	color:#000000;
+}
+.CalendarBody{
+	background-color:#dfedf5;
+	height:22px;
+	margin-top:2px;
+	margin-bottom:2px;
+	cursor:hand;
+}
+.SelectedCell{
+	background-color:#0069cc;
+	height:22px;
+	margin-top:2px;
+	margin-bottom:2px;
+	cursor:arrow;
+	color: #fff;
+}
+Input.SumitButton{
+	background-color:Transparent;
+	color:#fff;
+	background-image:url('button.gif');
+	height:30;
+	width:54;
+	margin:0 4px;
+	background-position: 0 0;
+	background-repeat:no-repeat;
+	overflow:hidden;
+	cursor:default;
+	font-family:MS Sans Serif,Tahoma;
+	border-style:none
+}
