@@ -23,21 +23,20 @@
    <script type="text/javascript" src="/media/js/jquery/jQuery1.11.3.min.js"></script>
   <script type="text/javascript">
   $(document).ready(function () {
-    
-	  var loading = false; //加载数据标志位 ,防止ajax重复提交
+	  //加载数据标志位 ,防止ajax重复提交
+	  var loading = false; 
 
-	  
+	  //滚动加载页面数据
       $("#showConent").scroll(function () {
           var viewH = $(this).height();                            //可见高度
           var contentH = $(this).get(0).scrollHeight; //内容高度
           var scrollTop = $(this).scrollTop();                //滚动高度
           var count = $(".showDepEmploy").length;  //已经在显示页面的高度
           
-          //获取当前查询条件
-          var form = new FormData(document.getElementById("findAllEmpId"));
-          
+          //判断是否已经到网页底部
           if (contentH - viewH - scrollTop<=100) {
-        	  loading = true;    //设置数据重复加载标志位
+        	  //设置数据重复加载标志位
+        	  loading = true;    
         	  
         	  //显示加载提示信息
               $("#imloading").fadeIn("slow");
@@ -53,16 +52,20 @@
                      type: "post",
                      async:false,
                      url: "/test/findAjaxSpringHello.do?showDataLineCount="+showDataLineCount ,
-                     data: form,
+                     data: $("#findAllEmpId").serialize(),
                      processData: false,
                      contentType: false,
                      success: function (data) {
+                    	  var  employeeList = eval(data);
+                    	  
                     	//添加数据
-                    	 if(data == null || data.length ==0){
+                    	 if(employeeList == null || employeeList.length ==0){
+                    		 loading = true; 
                     		 $("#imloading").text("数据已经加载完了...");
+                    		 $("#imloading").show();
                     		 
                     	 }else{
-                    		  var  employeeList = eval(data);
+                    		
 	   	                   	  var  srollTableDate = "";
 	   	                   	  for(var i = 0; i < employeeList.length; i++){
 	   	                   		  srollTableDate += '<tr>'
@@ -78,15 +81,17 @@
 	   	                        $("#showDataLineCountID").val(Number(showDataLineCount)+Number(employeeList.length));
 	   	                        //设置数据重复加载标志位
 	   	                        loading = false; 
+	   	                        
+	   	                       //隐藏加载提示信息
+	   	                       $("#imloading").fadeOut();
+	   	                       $("#imloading").fadeOut("slow");
+	   	                       $("#imloading").fadeOut(3000);
                     	 }
 	                   	 
                      }
                  }); 
                   
-                  //隐藏加载提示信息
-                  $("#imloading").fadeOut();
-                  $("#imloading").fadeOut("slow");
-                  $("#imloading").fadeOut(3000);
+            
                   
               }, 1500);
             
