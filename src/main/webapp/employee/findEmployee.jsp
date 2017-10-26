@@ -32,7 +32,7 @@
           var contentH = $(this).get(0).scrollHeight; //内容高度
           var scrollTop = $(this).scrollTop();                //滚动高度
           var count = $(".showDepEmploy").length;  //已经在显示页面的高度
-          
+     
           //判断是否已经到网页底部
           if (contentH - viewH - scrollTop<=100) {
         	  //设置数据重复加载标志位
@@ -51,7 +51,7 @@
                   $.ajax({
                      type: "post",
                      async:false,
-                     url: "/test/findAjaxSpringHello.do?showDataLineCount="+showDataLineCount ,
+                     url: "/test/findAjaxEmployee.do?showDataLineCount="+showDataLineCount ,
                      data: $("#findAllEmpId").serialize(),
                      processData: false,
                      contentType: false,
@@ -105,7 +105,7 @@
 <body>
   <%@include file="/common/head.jsp"%>
   
-<form action="findSrpingHello.do"  id="findAllEmpId"  method="post" onsubmit="return false;">
+<form action="findEmployee.do"  id="findAllEmpId"  method="post" onsubmit="return false;">
 <input type="hidden"  name="showDataLineCount"  id="showDataLineCountID" value="${map.showDataLineCount}">
 
 <div class="row" >
@@ -119,7 +119,7 @@
 	</div>
 </div>
 
-<div class="panel panel-default"  id="showConent" style="height: 780px;overflow: auto;">
+<div class="panel panel-default"  id="showConent" style="height: 380px;overflow: auto;">
     <div class="panel-heading text-center">公司人员信息查询</div>
     <table class="table showDepEmploy">
            <thead>
@@ -161,7 +161,8 @@
 
   <script type="text/javascript">
     //设置页面高度
-	var  windowHeight = document.body.scrollHeight-130;// 网页可见区域高度
+	//var  windowHeight = document.body.scrollHeight ;// 网页可见区域高度
+	var  windowHeight = window.screen.availHeight - 190;// 屏幕可见区域高度
 	$("#showConent").height(windowHeight);
 	
     //查询人员信息

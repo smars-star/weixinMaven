@@ -466,7 +466,6 @@ th.sorted a{
 }
 th.sortable a{
 	color:#494949;
-	background: url(img/arrow_off.png) no-repeat right center;
 	text-decoration:none;
 	display:inline-block;
 	width:95%;

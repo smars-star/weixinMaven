@@ -9,6 +9,7 @@
          http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
     version="3.1">
 
+   <!-- 获取配置文件 -->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
@@ -23,11 +24,13 @@
 	<listener>
 		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
 	</listener>
+	
 
 	<!-- 获取微信access_token监听 -->
 	<listener> 
 	    <listener-class>com.application.weixin.util.WeiXinAccessToken</listener-class> 
      </listener>
+
 
 	<!-- 设置字体编码格式过滤器 -->
 	<filter>
@@ -42,6 +45,7 @@
 		<filter-name>setEncoding</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+	
 
 	<!-- displaytag分页显示 -->
 	<filter>

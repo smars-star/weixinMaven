@@ -94,13 +94,13 @@
 					window.open('/weixin/deleteDep.do?depID=' + treeNode.id);
 				}
 			},
-			onRename: function(event, treeId, treeNode, isCancel){
+			beforeRename: function(event, treeId, treeNode, isCancel){
 			
-				 //alert(treeNode.id+":"+treeNode.name+":"+treeNode.parentid);
-				  var a=confirm("您确定要修改吗？");
+				// alert(treeNode.id+":"+treeNode.name+":"+treeNode.parentid);
+				var a=confirm("您确定要修改吗？");
 				if(a == true){
 					window.open('/weixin/modifyDep.do?id=' + treeNode.id+"&name="+treeNode.name+"&parentid="+treeNode.parentid);
-				}
+				} 
 			}
 		
 		}

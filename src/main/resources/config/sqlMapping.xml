@@ -11,17 +11,10 @@
 	        <setting name="logImpl" value="LOG4J2" />    
 	    </settings>  
 	   -->  
-     <typeAliases>
-     	  
-     	  <!-- 声明DTO  测试 -->
-    	<typeAlias type="com.application.employee.demo.dto.EmployeeDTO" alias="EmployeeDTO" />
-    	
-    </typeAliases>
-
     <mappers>
     	
-    	<!-- 人员sqlMapper   测试 -->
-    	<mapper resource="com/application/employee/demo/dao/sqlmap/EmployeeMapper.xml" />
+    	<mapper resource="com/application/common/employee/dao/sqlmap/EmployeeMapper.xml" />
+    	<mapper resource="com/application/common/department/dao/sqlmap/DepartmentMapper.xml" />
     	<mapper resource="com/application/weixin/dao/sqlmap/WeixinMapper.xml" />
     	
     </mappers>

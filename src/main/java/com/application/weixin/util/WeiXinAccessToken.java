@@ -32,7 +32,9 @@ public class WeiXinAccessToken implements ServletContextListener  {
 	 */
 	private static final long serialVersionUID = -2350265212524988812L;
 
-	/** AccessToken是企业号的全局唯一票据，调用接口时需携带AccessToken */
+	/**
+	 *  AccessToken是企业号的全局唯一票据，调用接口时需携带AccessToken 
+	 */
 	public static String access_token = "";
 
 	private Timer timer = null;
@@ -51,7 +53,8 @@ public class WeiXinAccessToken implements ServletContextListener  {
 		String accessTokenTimeStr =   appSettingFactory.getAppSetting("accessTokenTime") ;
 		int accessTokenTime = Integer.parseInt(accessTokenTimeStr);// access_token有效时间
 
-		timer = new Timer(true);// 创建一个新计时器，可以指定其相关的线程作为守护程序运行。
+		// 创建一个新计时器，可以指定其相关的线程作为守护程序运行。
+		timer = new Timer(true);
 		// 设置任务计划，启动和间隔时间
 		timer.schedule(new contractTask(), 0, accessTokenTime);
 		

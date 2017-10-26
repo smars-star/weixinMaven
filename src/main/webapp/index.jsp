@@ -128,20 +128,14 @@ div .miaoshu{
 <body>
   <%@include file="/common/head.jsp"%>
         
-       <div class="list-group">
-		   <a href="./test/findSrpingHello.do" class="list-group-item list-group-item-success" >查询人员(部门)信息【滚动加载数据】</a>
+<div class="list-group">
+		   <a href="./test/findEmployee.do" class="list-group-item list-group-item-success" >查询人员(部门)信息【滚动加载数据】</a>
 		   <a href="./weixin/findAddressBookEmpInfo.do" class="list-group-item list-group-item-info">微信通讯录人员维护</a>
 		   <a href="./weixin/findAddressBookDepInfo.do" class="list-group-item list-group-item-warning">微信通讯录部门维护</a>
 		   <a href="./qrcode/findAllQRCode.do" class="list-group-item list-group-item-danger">常用链接二维码入口(网页授权) </a>
 		   <a href="./pageAuthorization/findPageAuthorization.do" class="list-group-item list-group-item-success" >网页应用(JS-SDK)</a>
 		   <a href="javascript:alert('暂未开通！');" class="list-group-item list-group-item-success" >企业微信支付</a>
 		   <a href="./qrcode/findBase64QRCode.jsp" class="list-group-item list-group-item-info">二维码生成工具</a>
-		   <!--    <a href="./weixin/findAddressBookDepInfo.do" class="list-group-item list-group-item-warning">微信通讯录部门维护</a>
-		   <a href="./qrcode/findAllQRCode.do" class="list-group-item list-group-item-danger">常用链接二维码入口(网页授权) </a>
-		   <a href="./pageauthoriza/findPageAuthorization.jsp" class="list-group-item list-group-item-success" >网页应用</a><br>
-		     -->
-
-	
 
 		   <div style="position: absolute;bottom: 100px;width: 100%;" align="center">
 		          <p class="miaoshu">欢迎关注陕西长城数字软件有限公司</p>
@@ -167,7 +161,7 @@ div .miaoshu{
 				</ul>
 			</div>
 
-		</div>
+</div>
         
         
         

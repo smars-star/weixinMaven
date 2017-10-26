@@ -14,45 +14,24 @@
     
   <%@include file="/common/taglib.jsp"%>
   <%@include file="/common/js_css.jsp"%>
-  <%--@include file="/common/JQuery.jsp"--%>
+  <%@include file="/common/JQuery.jsp"%>
 
+<style type="text/css">
+ul.ztree{
+background: none !important;
+border: none !important;
+height:100% !important;
+width:240px !important;
+margin-top:0px !important;
+padding-top:10px !important;
+padding-bottom:10px !important;
+}
+.page-sidebar{
+overflow: hidden !important;
+}
 
-  <script type="text/javascript" src="<%=request.getContextPath() %>/media/js/jquery/jQuery1.11.3.min.js"></script>
-  <script type="text/javascript">
-  $(document).ready(function () {
+</style>
 
-      $("#showConent").scroll(function () {
-          var viewH = $(this).height();//可见高度
-          var contentH = $(this).get(0).scrollHeight;//内容高度
-          var scrollTop = $(this).scrollTop();//滚动高度
-          var count = $(".showDepEmploy tr").length;
-          if (contentH - viewH - scrollTop<=100) {
-        	  
-        	  //显示加载提示信息
-        	  $("#imloading").fadeIn();
-              $("#imloading").fadeIn("slow");
-              $("#imloading").fadeIn(3000);
-              
-              //每次动态 1500秒显示
-        	  setTimeout(function() {
-        		  //对数据进行分装
-        		  var  srollTableDate = '<tr><td colspan="12">'
-                      +'<p>《世界著名计算机教材精选·人工智能:一种现代的方法(第3版)》是最权威、最经典的人工智能教材，已被全世界100多个国家的1200多所大学用作教材。《世界著名计算机教材精选·人工智能:一种现代的方法(第3版)》的最新版全面而系统地介绍了人工智能的理论和实践，阐述了人工智能领域的核心内容，并深入介绍了各个主要的研究方向。全书分为七大部分：第Ⅰ部分“人工智能”，第Ⅱ部分“问题求解”，第Ⅲ部分“知识、推理与规划”，第Ⅳ部分“不确定知识与推理”，第Ⅴ部分“学习”，第Ⅵ部分“通信、感知与行动”，第Ⅶ部分“结论”。《世界著名计算机教材精选·人工智能:一种现代的方法(第3版)》既详细介绍了人工智能的基本概念、思想和算法，还描述了其各个研究方向最前沿的进展，同时收集整理了详实的历史文献与事件。《世界著名计算机教材精选·人工智能:一种现代的方法(第3版)》适合于不同层次和领域的研究人员及学生，是高等院校本科生和研究生人工智能课的首选教材，也是相关领域的科研与工程技术人员的重要参考书。</p>'
-                      +'</td></tr>'
-                 //添加数据
-				 $(".showDepEmploy").append(srollTableDate);
-				
-        		//隐藏加载提示信息
-                 $("#imloading").fadeOut();
-                 $("#imloading").fadeOut("slow");
-                 $("#imloading").fadeOut(3000);
-					
-        	  },1500)
-          }
-      });
-
-  })
-  </script> 
 </head>
 <body>
   <%@include file="/common/head.jsp"%>
@@ -60,12 +39,13 @@
 <form action="findAddressBookEmpInfo.do" method="post" onsubmit="return false;">
  <input type="hidden"  name="department" id="departmentID"  value="${department }">
  
- <div style="width:260; vertical-align:top; BORDER-RIGHT: #999999 1px dashed">
-	 <ul id="tree" class="ztree" style="width:260px; overflow:auto;"></ul>
+ <div class="page-sidebar">
+	 <ul id="tree" class="ztree"></ul>
  </div>
  
-<div  style="width:150px;display: block;float: right;position: absolute;top: 60px;right: 10px;">
-   <button class="btn btn-primary btn-lg" type="submit" onclick="addInitEmp();">新增人员</button>
+<div  style="width:300px;display: block;float: right;position: absolute;top: 60px;right: 10px;">
+   <button class="btn btn-primary btn-lg" type="submit" onclick="preAddEmp();">新增人员</button>
+   <button class="btn btn-primary" type="button" onclick="synchWeixinEmp();">同步企业微信信息</button>
 </div>
 			 
  <div style="position: fixed; left:260px;  top:120px;height:550px;overflow: auto;" id="showConent">
@@ -112,20 +92,10 @@
 		
 </div>
 
-  <div id="imloading" style="width:150px;height:30px;line-height:30px;font-size:16px;text-align:center;border-radius:3px;opacity:0.7;background:#000;margin:10px auto 30px;color:#fff;display:none">
-	       人员数据加载中.....
-  </div>
 	
 </form>	
- 
-  <script type="text/javascript" src="<%=request.getContextPath() %>/media/zTree/js/jquery-1.4.4.min.js"></script>
-  <script type="text/javascript" src="<%=request.getContextPath() %>/media/zTree/js/jquery.ztree.core.js"></script>
-  
-  
+   
  <script type="text/javascript">
-    //设置页面显示高度
-    var  windowHeight = window.screen.availHeight - document.body.clientHeight -200;// 网页可见区域高度
-    $("#showConent").height(windowHeight);
     
      /******************  zTree ***********************/
     var zTree;
@@ -179,7 +149,6 @@
 		h = demoIframe.height() >= maxH ? minH:maxH ;
 		if (h < 530) h = 530;
 		demoIframe.height(h);
-		
 	}
   
 
@@ -246,28 +215,25 @@
 						    	                                     +depEmpList[i].email+'</td><td>'+wixinid+'</td><td>'
 						    	                                     +avatarStr+'</td><td>'+statusStr+'</td><td>'
 						    	                                     +depEmpList[i].extattr.attrs+'</td></tr>';
-						    	                                     
 						    }
 		        
 		        }else{
 		        	department = departmentID;
 		        	showEmpListStr = '<tr><td colspan="11">对不起，暂无人员信息！</td></tr>';
-		        	
 		        }
 		        
 		        $("#departmentID").val(department);
 			    $(".showDepEmploy tbody").html(showEmpListStr); 
 			    
 		   },error: function(e) {
-	            alert("对不起，由于网络原因系统没有反映！<br/>请重新进入应用！");
-	            
+	            alert("对不起，由于网络原因系统没有反映！<br/>请重稍后再试！");
 	      }
 		});
      }	
 	
 	//修改微信人员信息
 	function  modifyInitEmp(userid){
-		  window.open("/weixin/modifyInitEmp.do?userid="+userid);
+		  window.open("/weixin/preModifyWexinEmp.do?userid="+userid);
 	}
 	
 	//删除人员信息
@@ -279,9 +245,17 @@
 	}
 	  
    //新增人员信息
-   function  addInitEmp(){
+   function  preAddEmp(){
 	  window.open("/weixin/preAddEmp.do");
 	}
+   
+   //同步企业微信人员信息
+   function  synchWeixinEmp(){
+	   confirm("您确定要同步吗？", function() {
+			window.open('/weixin/synchWeixinEmp.do', '',show_winOpenString(800,550));
+		}, function() {
+		});
+   }
 	
   </script>
   

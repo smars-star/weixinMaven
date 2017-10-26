@@ -4,23 +4,18 @@
 	
 	
 	 <!-- 查询人员信息集合  	-->
-	 <select id="findEmployeeByParam" parameterType="java.util.Map" resultType="EmployeeDTO">
-	select  employeeId,employeeName,employeeNo,
+	 <select id="findEmployeeByParam" parameterType="java.util.Map" resultType="com.application.common.employee.dto.EmployeeDTO">
+	SELECT  employeeId,employeeName,employeeNo,
 	              workDepID,workDepName,genderCode,
 	              genderCodeValue, rowsCount
-	from (
-				SELECT a.employeeId,
-				a.employeeName,
-				a.employeeNo,
-				a.workDepID,
-				b.depName workDepName,
-				a.genderCode,
-				(CASE
-				WHEN a.genderCode = 1 THEN '男'
-				WHEN a.genderCode = 2 THEN '女'
-				END) genderCodeValue,
-				rownum rowsCount
-				FROM fw_employee a, fw_department b
+	FROM (
+				SELECT a.employeeId, a.employeeName, a.employeeNo,
+				                 a.workDepID, b.depName workDepName, a.genderCode,
+				                 (CASE
+				                          WHEN a.genderCode = 1 THEN '男'
+				                           WHEN a.genderCode = 2 THEN '女'
+				                 END) genderCodeValue, rownum rowsCount
+				FROM     fw_employee a, fw_department b
 				where a.isPost ='是' and a.workDepID = b.depId
 				<if test="employeeName != null and employeeName != ''">
 					and ( instr(b.depName,#{employeeName}) >0 or
@@ -28,11 +23,16 @@
 				</if>
 				order by workDepID desc,employeeName
 	)
-	<![CDATA[ where rowsCount >= #{showDataLineCount} and rowsCount <= #{showDataLineCount}+20 ]]>
+	<where>
+	      <if test="showDataLineCount != null and showDataLineCount != ''">
+	           <![CDATA[ rowsCount >= #{showDataLineCount}  and rowsCount <= #{showDataLineCount}+20 ]]>
+	      </if>
+	</where>
+	
     </select> 
       
     <!-- 查询人员信息  -->
-	<select id="findEmployee"  resultType="EmployeeDTO">
+	<select id="getEmployee"  resultType="com.application.common.employee.dto.EmployeeDTO">
         SELECT   employeeId,
 					       employeeName,
 					       employeeNo,
