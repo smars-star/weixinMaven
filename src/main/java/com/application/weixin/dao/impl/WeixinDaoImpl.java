@@ -6,7 +6,7 @@ package com.application.weixin.dao.impl;
 
 import org.springframework.stereotype.Repository;
 
-import com.application.common.base.BaseDao;
+import com.application.framework.base.dao.BaseDao;
 
 
 /** 

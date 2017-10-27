@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="department">
+	
+	
+	 <!-- 查询人员信息集合  	-->
+	 <select id="findDeployeeeByParam" parameterType="java.util.Map" resultType="com.application.common.department.dto.DepartmentDTO">
+	 SELECT    depId, parentDepID, depNO, depName, depShortName, englishName, sortBy, organType, infoStatus
+	 FROM       fw_department
+	 WHERE   infoStatus = '有效'
+	 ORDER    BY SORTBY
+    </select> 
+	
+</mapper>

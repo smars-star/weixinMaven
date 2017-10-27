@@ -37,11 +37,19 @@
   
     <!-- spring和MyBatis整合,扫描目录下的mybatis配置映射文件 -->  
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">  
+    
+         <!-- 当mybatis的xml文件和mapper接口不在相同包下时，需要用mapperLocations属性指定xml文件的路径。  
+         *是个通配符，代表所有的文件，**代表所有目录下 -->  
+         
          <!-- 这里加载Mybatis的配置文件 -->
         <property name="dataSource" ref="dataSource" />  
         
+        <!--
+         <property name="configLocation" value="classpath:config/sqlMapping.xml"></property>
+         -->  
+        
         <!-- 自动扫描mapping.xml文件 -->  
-         <property name="configLocation"  value="classpath:com/application/**/dao/sqlmap/*.xml"></property>  
+         <property name="mapperLocations"  value="classpath:com/application/**/dao/sqlmap/*.xml"></property>  
     </bean>
   
     <!-- DAO接口所在包,Spring会查找其下的类,用来和mapper.xml对应起来  
