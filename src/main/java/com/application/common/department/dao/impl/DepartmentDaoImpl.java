@@ -28,8 +28,8 @@ public class DepartmentDaoImpl extends BaseDao{
      * </p>
      * @return List<DepartmentDTO> 返回部门信息集合  
      */
-    public List<DepartmentDTO> findDeployeeeByParam(Map<String, String> map) {
-        return this.sqlSessionTemplate.selectList("department.findDeployeeeByParam", map);
+    public List<DepartmentDTO> findDepartmentByParam(Map<String, String> map) {
+        return this.sqlSessionTemplate.selectList("department.findDepartmentByParam", map);
     }
    
    

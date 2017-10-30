@@ -4,7 +4,7 @@
 	
 	
 	 <!-- 查询人员信息集合  	-->
-	 <select id="findDeployeeeByParam" parameterType="java.util.Map" resultType="com.application.common.department.dto.DepartmentDTO">
+	 <select id="findDepartmentByParam" parameterType="java.util.Map" resultType="com.application.common.department.dto.DepartmentDTO">
 	 SELECT    depId, parentDepID, depNO, depName, depShortName, englishName, sortBy, organType, infoStatus
 	 FROM       fw_department
 	 WHERE   infoStatus = '有效'

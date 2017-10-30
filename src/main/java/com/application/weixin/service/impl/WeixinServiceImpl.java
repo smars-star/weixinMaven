@@ -29,6 +29,8 @@ import com.application.weixin.util.WeiXinUtils;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+
+
 /** 
  * 微信WeixinService接口实现类  
  * 
@@ -56,7 +58,6 @@ public class WeixinServiceImpl implements WeixinService{
      */
     @Autowired
 	private  DepartmentService  departmentServiceImpl;
-    
 	
 
 	 /**
@@ -86,6 +87,7 @@ public class WeixinServiceImpl implements WeixinService{
         // 返回企业微信部门信息集合
         return departmentList;
     }
+    
 
      /**
       *  查询企业微信通讯录人员信息
@@ -115,6 +117,7 @@ public class WeixinServiceImpl implements WeixinService{
         return weixinEmpDTO;
     }
     
+    
     /**
      *  修改企业微信通讯录人员信息
      * @param weixinEmployeeDTO 企业微信通讯录人员DTO
@@ -131,6 +134,7 @@ public class WeixinServiceImpl implements WeixinService{
        String updateStr =  WeiXinUtils.sendHttpWeixinBodyByPost(url,weixinEmployeeDTO,"errmsg");
        return updateStr;
    }
+   
 
    /**
      *  查询企业微信通讯录部门人员信息集合
@@ -172,7 +176,6 @@ public class WeixinServiceImpl implements WeixinService{
         return employeeList;
     }
 
-   
 
     /**      
      * 删除企业微信通讯录人员信息
@@ -192,6 +195,7 @@ public class WeixinServiceImpl implements WeixinService{
         //返回删除企业微信通信录人员信息 返回信息
         return deleteStr;
     }
+    
 
     /**      
      * 添加企业微信通讯录人员信息
@@ -212,6 +216,7 @@ public class WeixinServiceImpl implements WeixinService{
         return addStr;
     }
 
+    
     /**      
      * 添加企业微信通讯录部门信息
      * @param weixinDepartmentDTO 企业微信通讯录部门DTO 
@@ -231,6 +236,7 @@ public class WeixinServiceImpl implements WeixinService{
         return addStr;
     }
 
+    
     /**      
      * 删除企业微信通讯录部门     
      * @param depId  企业微信通讯录部门Id
@@ -250,6 +256,7 @@ public class WeixinServiceImpl implements WeixinService{
         return deleteStr;
     }
 
+    
     /**      
      * 修改企业微信通讯录部门信息     
      * @param weixinDepartmentDTO 企业微信通讯录部门DTO
@@ -287,7 +294,6 @@ public class WeixinServiceImpl implements WeixinService{
         }
     }
     
-    
 
     /**
      *  对企业微信部门list集合排序
@@ -318,62 +324,102 @@ public class WeixinServiceImpl implements WeixinService{
          return departmentList;      
      }
 
-     /**      
-      * 同步企业微信通讯录人员信息
-      * @return     返回同步结果
-     */
+     
+    /**      
+     * 同步企业微信通讯录人员信息
+     * @return     返回同步结果
+    */
     @Override
-    public boolean synchWeixinEmp() {
+    public boolean isSynchWeixinEmp() {
+        
+        //同步企业微信通讯录部门信息
+        synchWeixinDep();
+        //同步企业微信通讯录人员信息
+        synchWeixinEmp();
+        
+        return true;
+    }
+    
+    
+    /**
+     *   同步企业微信通讯录部门信息
+     */
+    private  void  synchWeixinDep() {
         //查询条件集合
         Map<String,String> map = new HashMap<>();
         
         /********************************  同步部门  *******************************************/
         //获取微信通讯录部门信息集合
         List<WeixinDepartmentDTO> weixinDepartmentDTOs = this.findWeixinDepList();
-        
         //获取部门信息集合
-        List<DepartmentDTO> departmentDTOs = this.departmentServiceImpl.findDeployeeeByParam(map);
+        List<DepartmentDTO> departmentDTOs = this.departmentServiceImpl.findDepartmentByParam(map);
          
         //比较查询新增加的部门
+        Map<String,WeixinDepartmentDTO> weixinDepartmentMap  = new HashMap<>();
+        for(WeixinDepartmentDTO weixinDepartment : weixinDepartmentDTOs) {
+            weixinDepartmentMap.put(weixinDepartment.getName(), weixinDepartment);
+        }
         
+        //封装新增加的微信通讯录部门信息
+        List<WeixinDepartmentDTO> weixinDepartmentList = new ArrayList<>();
+        for(DepartmentDTO  department : departmentDTOs) {
+              if(!weixinDepartmentMap.containsKey(department.getDepName())) {
+                  //获取企业微信通讯录中没有添加的部门
+                  WeixinDepartmentDTO  tempWeixinDepartmentDTO = new WeixinDepartmentDTO();
+                  tempWeixinDepartmentDTO.setName(department.getDepName());
+                  tempWeixinDepartmentDTO.setParentid(Integer.parseInt(department.getParentDepId()));
+                  weixinDepartmentList.add(tempWeixinDepartmentDTO);
+              }
+        }
         
+        //添加微信通信录部门
+        for(WeixinDepartmentDTO  weixinDepartmentDTO : weixinDepartmentList) {
+            //this.addWexinDep(weixinDepartmentDTO);
+            System.out.println(weixinDepartmentDTO.getName());
+        }
         
+    }
+    
+    
+    /**
+     *   同步企业微信通讯录人员信息
+     */
+    private  void  synchWeixinEmp() {
+        //查询条件集合
+        Map<String,String> map = new HashMap<>();
         
-        
-         /********************************  同步人员  *******************************************/
+        /********************************  同步人员  *******************************************/
         //获取企业微信通讯录所有人员信息集合 1：最高部门Id
         List<WeixinEmployeeDTO>  weixinEmployeeList = this.findWeixinEmpList("1");
         
         //获取人员信息集合
-        map.clear();
         List<EmployeeDTO>  employeeList = this.employeeServiceImpl.findEmployeeByParam(map);
         
-        
         //比较企业通讯录中  没有同步的人员信息
-        Map<String,EmployeeDTO> employeeMap = new HashMap<>();
-        for(EmployeeDTO employee : employeeList) {
-            employeeMap.put(employee.getEmployeeID(), employee);
+        Map<String,WeixinEmployeeDTO> employeeMap = new HashMap<>();
+        for(WeixinEmployeeDTO weixinEmployee : weixinEmployeeList) {
+            employeeMap.put(weixinEmployee.getUserid(), weixinEmployee);
         }
         List<WeixinEmployeeDTO> newWeixinEmployeeList  = new ArrayList<>();
-        for(WeixinEmployeeDTO  weixinEmployeeDTO :weixinEmployeeList) {
-            if(!map.containsKey(weixinEmployeeDTO.getUserid())) {
+        for(EmployeeDTO  employee : employeeList) {
+            if(!employeeMap.containsKey(employee.getEmployeeNo())) {
                 //获取在微信通讯录中没有的人员
-                EmployeeDTO  tempEmployee = employeeMap.get(weixinEmployeeDTO.getUserid());
                 WeixinEmployeeDTO tempWeixinEmployee = new WeixinEmployeeDTO();
-                tempWeixinEmployee.setUserid(tempEmployee.getEmployeeNo());
-                tempWeixinEmployee.setName(tempEmployee.getEmployeeName());
-                tempWeixinEmployee.setGender(tempEmployee.getGenderCode()+"");
+                tempWeixinEmployee.setUserid(employee.getEmployeeNo());
+                tempWeixinEmployee.setName(employee.getEmployeeName());
+                tempWeixinEmployee.setGender(employee.getGenderCode()+"");
+                List<Integer>  department = new ArrayList<>();
+                tempWeixinEmployee.setDepartment(department);
                 newWeixinEmployeeList.add(tempWeixinEmployee);
             }
         }
         
         //添加新的人员信息
         for(WeixinEmployeeDTO weixinEmployeeDTO : newWeixinEmployeeList) {
-            this.addWeixinEmployee(weixinEmployeeDTO);
+            System.out.println(weixinEmployeeDTO.getName() +":"+newWeixinEmployeeList.size());
+            //this.addWeixinEmployee(weixinEmployeeDTO);
         }
-        
-        
-        return false;
     }
+
 	
 }

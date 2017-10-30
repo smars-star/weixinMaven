@@ -27,7 +27,7 @@ public class DepartmentDTO implements Serializable{
      * 部门Id
      */
     private String depId = "";
-
+     
     /**
      * 部门名称
      */

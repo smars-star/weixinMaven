@@ -251,10 +251,15 @@ overflow: hidden !important;
    
    //同步企业微信人员信息
    function  synchWeixinEmp(){
-	   confirm("您确定要同步吗？", function() {
-			window.open('/weixin/synchWeixinEmp.do', '',show_winOpenString(800,550));
-		}, function() {
-		});
+	   var isSysnch = confirm("您确定要同步吗？", function() {
+	   }, function() {
+	   });
+	  if(isSysnch){
+          $.post("/weixin/synchWeixinEmp.do", function(data){
+              alert("Data Loaded: " + data);
+          }); 
+	  }
+	   
    }
 	
   </script>

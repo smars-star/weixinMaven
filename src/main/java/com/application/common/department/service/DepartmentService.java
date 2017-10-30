@@ -24,6 +24,6 @@ public interface DepartmentService{
      * </p>
      * @return List<DepartmentDTO> 返回部门信息集合
      */
-    List<DepartmentDTO> findDeployeeeByParam(Map<String, String> map);
+    List<DepartmentDTO> findDepartmentByParam(Map<String, String> map);
 
 }

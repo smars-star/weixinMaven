@@ -38,9 +38,9 @@ public class DepartmentServiceImpl implements DepartmentService{
      * @return List<DepartmentDTO> 返回部门信息集合  
      */
     @Override
-    public List<DepartmentDTO> findDeployeeeByParam(Map<String, String> map) {
+    public List<DepartmentDTO> findDepartmentByParam(Map<String, String> map) {
         
-        return this.departmentDaoImpl.findDeployeeeByParam(map);
+        return this.departmentDaoImpl.findDepartmentByParam(map);
     }
    
     

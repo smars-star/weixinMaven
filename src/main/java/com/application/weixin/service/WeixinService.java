@@ -83,6 +83,6 @@ public interface WeixinService{
      * 同步企业微信通讯录人员信息
      * @return 返回同步结果
      */
-    boolean synchWeixinEmp();
+    boolean isSynchWeixinEmp();
 
 }

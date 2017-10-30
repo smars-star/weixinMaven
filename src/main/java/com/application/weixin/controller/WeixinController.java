@@ -101,7 +101,7 @@ public class WeixinController extends BaseController{
     }
     
 
- /**
+    /**
      *  初始化修改企业微信通讯录人员信息页面
      * @param model Model对象用于设置页面数据
      * @param aMap Map 对象页面传入参数集合：
@@ -381,14 +381,23 @@ public class WeixinController extends BaseController{
      *  同步企业微信通讯录人员信息
      * @param attr RedirectAttributes 重定向
      * @return String 跳转页面
+     * @throws IOException  
      */
     @RequestMapping("/synchWeixinEmp")
-    public  String  synchWeixinEmp(Model model) {
+    public  void  synchWeixinEmp(Model model) throws IOException {
+        //获取企业微信提示信息
+        String   system_operation_info  = "";
         
         //同步企业微信通讯录人员信息
-      boolean isSynchronized =  this.weixinServiceImpl.synchWeixinEmp();
+        boolean isSynchronized =  this.weixinServiceImpl.isSynchWeixinEmp();
+        if(isSynchronized) {
+            system_operation_info =  "同步企业微信通讯录人员成功！";
+        }else {
+            system_operation_info =  "更新企业微信通讯录人员失败！";    
+        }
         
-        return null;
+        //返回页面信息
+        reponse.getWriter().println(system_operation_info);
     }
    
 }
