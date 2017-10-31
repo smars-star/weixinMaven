@@ -17,7 +17,7 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 
-import Decoder.BASE64Encoder;
+import sun.misc.BASE64Encoder;
 
 
 /** 
@@ -37,7 +37,7 @@ public class QRCodeUtils {
      * @return String    返回64bit图片格式
      * @throws Exception 
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "unchecked", "rawtypes", "restriction" })
     public  static  String   getBASE64AppQRCode(String content,int width,int height,String format) throws Exception{
         //初始化appSetting
         AppSettingFactory appSettingFactory = AppSettingFactory.getInstance();
@@ -58,13 +58,13 @@ public class QRCodeUtils {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(bufferImage, format, baos);
         byte[] bytes = baos.toByteArray();
-
+        
         //再把数组转换成BASE64字符串， 在加上图片的格式
         BASE64Encoder  base64Encoder = new BASE64Encoder();
-        base64Encoder.encode(bytes);
+        String  base64Str = base64Encoder.encode(bytes);
 
         //返回64bit图片格式
-        return  "data:image/"+format+";base64,"+base64Encoder.encode(bytes);
+        return  "data:image/"+format+";base64,"+base64Str;
     }
 
 }

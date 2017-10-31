@@ -102,6 +102,7 @@ body, div, ul, li, p, a, img {
 div image {
 	cursor: pointer;
 	transition: all 0.6s;
+	margin-bottom: 0px;
 }
 
  div img:hover {
@@ -114,7 +115,7 @@ div p {
 	left: 0;
 }
 
-div .miaoshu{
+ .miaoshu{
     width:310px;
     height:20px;
     text-align:center;
