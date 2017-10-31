@@ -26,6 +26,7 @@ import sun.misc.BASE64Encoder;
  * @author $Author: liuyunpeng $
  * @version $Revision: 1.0 $
  */
+@SuppressWarnings("restriction")
 public class QRCodeUtils {
 
     /**
@@ -37,12 +38,12 @@ public class QRCodeUtils {
      * @return String    返回64bit图片格式
      * @throws Exception 
      */
-    @SuppressWarnings({ "unchecked", "rawtypes", "restriction" })
+    @SuppressWarnings({ "unchecked", "rawtypes"})
     public  static  String   getBASE64AppQRCode(String content,int width,int height,String format) throws Exception{
         //初始化appSetting
         AppSettingFactory appSettingFactory = AppSettingFactory.getInstance();
 
-         //获取企业微信应用URL链接
+        //获取企业微信应用URL链接
         String weixin_app_url_temp =  appSettingFactory.getAppSetting(content);
         //设置图片格式
         Hashtable hints= new Hashtable();   
