@@ -111,8 +111,8 @@ public class WeixinController extends BaseController{
      * @return String 跳转页面
      * @throws Exception 
      */
-    @SuppressWarnings({ "static-access"})
-    @RequestMapping("/preModifyWexinEmp")
+    @SuppressWarnings("static-access")
+	@RequestMapping("/preModifyWexinEmp")
     public  String preModifyWexinEmp(HttpServletRequest request,Model model,String userid) throws Exception{
         //获取企业微信通信录人员信息
         WeixinEmployeeDTO  weixinEmpDTO  =  this.weixinServiceImpl.getWeixinEmployee(userid);

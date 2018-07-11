@@ -4,17 +4,10 @@
  */
 package com.application.weixin.util;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,11 +19,11 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import net.sf.json.JSONObject;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.application.weixin.dto.WeixinMessageDTO;
-
-import net.sf.json.JSONObject;
 
 /**
  * 微信WeixinUtil工具类
@@ -301,13 +294,14 @@ public class WeiXinUtils{
      * 获取人员微信头像
      * @param user_userid_infoUrl String对象用于获取微信人员头像url
      * @param employeeNo String对象用于企业微信人员编号
+     * @param access_token String对象用访问微信服务器密钥
      * @return photoUrl 返回人员微信头像地址
-     * @throws Exception
+     * @throws Exception 抛出异常
      */
-    public static String getWeixinPhotoUrl(String user_userid_infoUrl, String employeeNo) throws Exception {
-        // 从微信里面获取当前登录人微信头像
+    public static String getWeixinPhotoUrl(String user_userid_infoUrl, String employeeNo ,String access_token) throws Exception {
+        // 从微信里面获取当前人的微信头像
         String photoUrl = WeiXinUtils.getWeiXinInfo(user_userid_infoUrl + "access_token="
-                + WeiXinAccessToken.access_token + "&userid=" + employeeNo, "avatar");// 获取当前登录人微信头像
+                + access_token + "&userid=" + employeeNo, "avatar");
 
         // 返回微信头像链接地址
         return photoUrl;

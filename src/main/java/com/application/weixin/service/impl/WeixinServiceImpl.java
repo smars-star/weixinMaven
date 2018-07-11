@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +25,9 @@ import com.application.framework.util.AppSettingFactory;
 import com.application.weixin.dao.impl.WeixinDaoImpl;
 import com.application.weixin.dto.WeixinDepartmentDTO;
 import com.application.weixin.dto.WeixinEmployeeDTO;
+import com.application.weixin.listener.WeiXinAccessTokenListener;
 import com.application.weixin.service.WeixinService;
-import com.application.weixin.util.WeiXinAccessToken;
 import com.application.weixin.util.WeiXinUtils;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 
 
@@ -43,7 +43,6 @@ public class WeixinServiceImpl implements WeixinService{
 	/**
 	 *  注入微信DAO 接口
 	  */
-    @SuppressWarnings("unused")
     @Autowired
 	private  WeixinDaoImpl weixinDaoImpl;
 	
@@ -74,7 +73,7 @@ public class WeixinServiceImpl implements WeixinService{
         // 获取企业微信部门信息
         // 封装获取企业微信部门URL链接
         String department_infoUrl = appSettingFactory.getAppSetting("department_all_infoUrl")
-                + WeiXinAccessToken.access_token;
+                + WeiXinAccessTokenListener.access_token;
         // 根据RUL获取企业微信部门信息
         String  department = WeiXinUtils.getWeiXinInfo(department_infoUrl, "department");
         
@@ -102,7 +101,7 @@ public class WeixinServiceImpl implements WeixinService{
         
         //获部门员工详细信息
         String employee_all_infoUrl  =  appSettingFactory.getAppSetting("employee_get_infoUrl");
-        String url = employee_all_infoUrl+WeiXinAccessToken.access_token +"&userid="+userid;
+        String url = employee_all_infoUrl+WeiXinAccessTokenListener.access_token +"&userid="+userid;
         String  weixinEmp = WeiXinUtils.getWeiXinInfo(url, "");
         JSONObject jsonObject = JSONObject.fromObject(weixinEmp);
         WeixinEmployeeDTO  weixinEmpDTO  =  (WeixinEmployeeDTO) jsonObject.toBean(jsonObject, WeixinEmployeeDTO.class);
@@ -130,7 +129,7 @@ public class WeixinServiceImpl implements WeixinService{
    
        //获取企业微信人员信息
        String employee_update_infoUr = appSettingFactory.getAppSetting("employee_update_infoUr");
-       String url =  employee_update_infoUr + WeiXinAccessToken.access_token;
+       String url =  employee_update_infoUr + WeiXinAccessTokenListener.access_token;
        String updateStr =  WeiXinUtils.sendHttpWeixinBodyByPost(url,weixinEmployeeDTO,"errmsg");
        return updateStr;
    }
@@ -149,7 +148,7 @@ public class WeixinServiceImpl implements WeixinService{
 
         // 获部门员工链接
         String department_employee_infoUrl = appSettingFactory.getAppSetting("department_employee_allList_infoUrl");
-        String url = department_employee_infoUrl + WeiXinAccessToken.access_token + "&department_id=" + depId
+        String url = department_employee_infoUrl + WeiXinAccessTokenListener.access_token + "&department_id=" + depId
                 + "&fetch_child=1&status=1";
 
         //获取企业微信通讯录所有人员信息集合
@@ -189,7 +188,7 @@ public class WeixinServiceImpl implements WeixinService{
         
         //删除企业微信人员
         String employee_delete_infoUr = appSettingFactory.getAppSetting("employee_delete_infoUr");
-        String url = employee_delete_infoUr +WeiXinAccessToken.access_token+"&userid="+userid;
+        String url = employee_delete_infoUr +WeiXinAccessTokenListener.access_token+"&userid="+userid;
         String deleteStr = WeiXinUtils.sendHttpWeixinBodyByGet(url, "", "errmsg");
         
         //返回删除企业微信通信录人员信息 返回信息
@@ -209,7 +208,7 @@ public class WeixinServiceImpl implements WeixinService{
         
         //添加要增加的企业微信人员信息
         String employee_add_infoUr = appSettingFactory.getAppSetting("employee_add_infoUr");
-        String url = employee_add_infoUr +WeiXinAccessToken.access_token;
+        String url = employee_add_infoUr +WeiXinAccessTokenListener.access_token;
         String addStr = WeiXinUtils.sendHttpWeixinBodyByPost(url, weixinEmployeeDTO, "errmsg");
       
       //返回添加企业微信通信录人员信息 返回信息
@@ -229,7 +228,7 @@ public class WeixinServiceImpl implements WeixinService{
         
         //添加企业微信部门
         String department_add_infoUrl = appSettingFactory.getAppSetting("department_add_infoUrl");
-        String url = department_add_infoUrl +WeiXinAccessToken.access_token;
+        String url = department_add_infoUrl +WeiXinAccessTokenListener.access_token;
         String addStr = WeiXinUtils.sendHttpWeixinBodyByPost(url, weixinDepartmentDTO, "errmsg");
        
         //返回添加企业微信部门 返回信息
@@ -249,7 +248,7 @@ public class WeixinServiceImpl implements WeixinService{
         
         //删除企业微信部门
         String department_delete_infoUrl = appSettingFactory.getAppSetting("department_delete_infoUrl");
-        String url = department_delete_infoUrl +WeiXinAccessToken.access_token+"&id="+depID;
+        String url = department_delete_infoUrl +WeiXinAccessTokenListener.access_token+"&id="+depID;
         String deleteStr = WeiXinUtils.sendHttpWeixinBodyByGet(url, "", "errmsg");
         
         //返回删除企业微信通讯录企业部门 返回信息
@@ -269,7 +268,7 @@ public class WeixinServiceImpl implements WeixinService{
         
         //修改企业微信部门信息
         String department_update_infoUrl = appSettingFactory.getAppSetting("department_update_infoUrl");
-        String url =  department_update_infoUrl + WeiXinAccessToken.access_token;
+        String url =  department_update_infoUrl + WeiXinAccessTokenListener.access_token;
         String updateStr =  WeiXinUtils.sendHttpWeixinBodyByPost(url,weixinDepartmentDTO,"errmsg");
         
         //返回修改企业微信通讯录企业部门 返回信息

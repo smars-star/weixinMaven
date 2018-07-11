@@ -24,13 +24,9 @@
 	</listener>
 
 
-	<!-- 获取微信access_token监听 
-	    <listener> 
-	        <listener-class>com.application.weixin.util.WeiXinAccessToken</listener-class> 
-		</listener>
-     -->
+	<!-- 获取微信access_token监听 -->
 	<listener>
-		<listener-class>com.application.weixin.listener.AccesstokenListener</listener-class>
+		<listener-class>com.application.weixin.listener.WeiXinAccessTokenListener</listener-class>
 	</listener>
 
 	<!-- 设置字体编码格式过滤器 -->
@@ -47,16 +43,11 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
-
-
-
-
 	<!-- displaytag分页显示 -->
 	<filter>
 		<filter-name>exportFilter</filter-name>
 		<filter-class>org.displaytag.filter.ResponseOverrideFilter</filter-class>
 	</filter>
-
 
 	<!-- 部署weixinMaven配置start -->
 	<servlet>

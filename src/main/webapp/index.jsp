@@ -137,6 +137,7 @@ div p {
 		   <a href="./pageAuthorization/findPageAuthorization.do" class="list-group-item list-group-item-success" >网页应用(JS-SDK)</a>
 		   <a href="javascript:alert('暂未开通！');" class="list-group-item list-group-item-success" >企业微信支付</a>
 		   <a href="./qrcode/findBase64QRCode.jsp" class="list-group-item list-group-item-info">二维码生成工具</a>
+		   <a href="./phoneWarning/preModifyPhoneWarning.do" class="list-group-item list-group-item-success">个人小程序（测试）</a>
 
 		   <div style="position: absolute;bottom: 100px;width: 100%;" align="center">
 		          <p class="miaoshu">欢迎关注陕西长城数字软件有限公司</p>

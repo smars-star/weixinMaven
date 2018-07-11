@@ -13,9 +13,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.application.weixin.listener.WeiXinAccessTokenListener;
 import com.application.weixin.util.AesException;
 import com.application.weixin.util.SHA1;
-import com.application.weixin.util.WeiXinAccessToken;
 
 /**
  * 网页应用授权、JS-SDK网页应用
@@ -38,12 +38,12 @@ public class PageAuthorization{
     public String findPageAuthorization(HttpServletRequest request, Model model) throws IOException, AesException {
         // 把access_token放到session中
         HttpSession session = request.getSession();
-        session.setAttribute("accessToken_session", WeiXinAccessToken.access_token);
+        session.setAttribute("accessToken_session", WeiXinAccessTokenListener.access_token);
 
         // JS-SDK 签名标签,有效时间为7200s(2小时)
         String url = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request
                 .getRequestURI();
-        String jsapi_ticket = SHA1.getSHA1(WeiXinAccessToken.access_token, "1504489723", "h2z7e42b5gqtzkt", url);
+        String jsapi_ticket = SHA1.getSHA1(WeiXinAccessTokenListener.access_token, "1504489723", "h2z7e42b5gqtzkt", url);
         session.setAttribute("jsapi_ticket", jsapi_ticket);
 
         // 返回页面
