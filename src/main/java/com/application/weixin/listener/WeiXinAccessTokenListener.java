@@ -10,8 +10,8 @@ import java.util.TimerTask;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+//import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Logger;
 
 import com.application.framework.util.AppSettingFactory;
 import com.application.weixin.util.WeiXinUtils;
@@ -28,6 +28,11 @@ public class WeiXinAccessTokenListener implements ServletContextListener {
 	 * AccessToken是企业号的全局唯一票据，调用接口时需携带AccessToken
 	 */
 	public static String access_token = "";
+	
+	/**
+	 * 微信公众号AccessToken
+	 */
+	public static String weChat_access_token = "";
 
 	@Override
 	public void contextDestroyed(ServletContextEvent arg0) {
@@ -42,7 +47,7 @@ public class WeiXinAccessTokenListener implements ServletContextListener {
 		String accessTokenTimeStr = appSettingFactory.getAppSetting("accessTokenTime");
 		int accessTokenTime = Integer.parseInt(accessTokenTimeStr);// access_token有效时间
 
-		Logger logger = LogManager.getLogger("mylog");
+		//Logger logger = LogManager.getLogger("mylog");
 
 		// 创建一个新计时器，可以指定其相关的线程作为守护程序运行。
 		Timer timer = new Timer();
@@ -69,7 +74,7 @@ public class WeiXinAccessTokenListener implements ServletContextListener {
 		private void excute() {
 			try {
 
-				Logger log = LogManager.getLogger("微信端获取Access_token企业号唯一票据！");
+				//Logger log = LogManager.getLogger("微信端获取Access_token企业号唯一票据！");
 				// 初始化AppSettingFactory
 				AppSettingFactory appSettingFactory = AppSettingFactory.getInstance();
 				String sCorpID = appSettingFactory.getAppSetting("corpID"); // 企业CorpID
@@ -85,7 +90,11 @@ public class WeiXinAccessTokenListener implements ServletContextListener {
 				access_token = tempAccess_token;
 
 				// 打印access_token日志
-				log.info("获取Access_token:" + access_token);
+				//log.info("获取Access_token:" + access_token);
+				
+				String weChatURL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&" + "appid=" +  appSettingFactory.getAppSetting("weChatAppID") + "&secret=" +  appSettingFactory.getAppSetting("weChatAppsecret");
+				weChat_access_token = WeiXinUtils.getWeiXinInfo(weChatURL, "access_token");
+				//log.info("获取微信公众号Access_token:" + weChat_access_token);
 
 			} catch (Exception e) {
 				e.printStackTrace();

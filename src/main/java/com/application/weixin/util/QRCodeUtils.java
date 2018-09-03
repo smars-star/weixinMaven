@@ -16,6 +16,7 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 import sun.misc.BASE64Encoder;
 
@@ -44,11 +45,21 @@ public class QRCodeUtils {
         AppSettingFactory appSettingFactory = AppSettingFactory.getInstance();
 
         //获取企业微信应用URL链接
-        String weixin_app_url_temp =  appSettingFactory.getAppSetting(content);
+        //String weixin_app_url_temp =  appSettingFactory.getAppSetting(content);
         //设置图片格式
         Hashtable hints= new Hashtable();   
-        hints.put(EncodeHintType.CHARACTER_SET, "utf-8");   
-        BitMatrix bitMatrix = new MultiFormatWriter().encode(weixin_app_url_temp, BarcodeFormat.QR_CODE, width, height,hints);   
+        
+        // 编码
+        hints.put(EncodeHintType.CHARACTER_SET, "utf-8"); 
+        
+        // 纠错等级
+        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+        
+        // 边框
+        hints.put(EncodeHintType.MARGIN, 1);
+        
+        
+        BitMatrix bitMatrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, width, height,hints);   
 
         //MatrixToImageWriter.writeToFile(bitMatrix, format, outputFile);//生成二维码图片
 

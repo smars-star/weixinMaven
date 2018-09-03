@@ -4,9 +4,12 @@
  */
 package com.application.weixin.util;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,11 +50,11 @@ public class WeiXinUtils{
             URL getUrl = null;
 
             // 创建一个管理证书的任务管理器
-            // TrustManager[] tm = { new
-            // gds.office.weixin.weixin.dto.MyX509TrustManager() };
+           // TrustManager[] tm = { new gds.office.weixin.weixin.dto.MyX509TrustManager() };
 
             // 创建SSL安全链接
             SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
+            //sslContext.init(null, tm, new java.security.SecureRandom());
             sslContext.init(null, null, new java.security.SecureRandom());
             // 从上述SSLContext对象中得到SSLSocketFactory对象
             SSLSocketFactory ssf = sslContext.getSocketFactory();
@@ -70,11 +73,12 @@ public class WeiXinUtils{
             // 获取访问URL获取的信息
             InputStream is = http.getInputStream();
             StringBuilder sb = new StringBuilder();
-            int i = 0;
-            byte[] b = new byte[1024];
-            while ((i = is.read(b)) != -1) {
-                String read = new String(b, 0, i, "UTF-8");
-                sb.append(read);
+            
+            // 读取缓存流
+            String line ;
+            BufferedReader  in = new BufferedReader( new InputStreamReader(is,"UTF-8") );
+            while( (line = in.readLine()) != null ){
+            	sb.append(line);
             }
 
             // 关闭和第三方建立的连接通道
@@ -347,5 +351,124 @@ public class WeiXinUtils{
         //返回HttpServletResponse对象
         return response;
     }
+    
+    
+    /**
+	 *  通过Post访问URL
+	 * @param url
+	 * @param jsonObject
+	 * @return
+	 * @throws Exception
+	 */
+	public static  String   getWeiXinInfoByPost(String url,JSONObject jsonObject,String messageName) {
+		
+		HttpsURLConnection http = null;
+		if(!url.isEmpty()){
+		     try {
+					URL getUrl = null;
+					
+					// 创建一个管理证书的任务管理器
+				   //TrustManager[] tm = { new gds.office.weixin.weixin.dto.MyX509TrustManager() };
+					//SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
+					//sslContext.init(null, tm, new java.security.SecureRandom());
+					// 从上述SSLContext对象中得到SSLSocketFactory对象
+					//SSLSocketFactory ssf = sslContext.getSocketFactory();
+					
+					//3. 打开URL链接
+					getUrl = new URL(url);
+					http = (HttpsURLConnection) getUrl.openConnection();
+					//((HttpsURLConnection) http).setSSLSocketFactory(ssf);
+					http.setRequestMethod("POST");
+					http.setRequestProperty("Content-Type", "application/json;charset=utf-8"); 
+					http.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
+					http.setRequestProperty("Charset", "UTF-8");
+					http.setDoOutput(true);
+					http.setDoInput(true);
+					http.connect();
+					
+					//4.1建立输入流，向指向的URL传入参数
+					OutputStreamWriter   osw = new OutputStreamWriter(http.getOutputStream(), "UTF-8");
+					osw.write(jsonObject.toString());
+					osw.flush();
+					osw.close();
+				    
+				   // 4.2这句才是真正发送请求  
+				   http.getInputStream();
+				   
+				   
+					// 获取访问URL获取的信息
+		            InputStream is = http.getInputStream();
+		            StringBuilder sb = new StringBuilder();
+		            int i = 0;
+		            byte[] b = new byte[1024];
+		            while ((i = is.read(b)) != -1) {
+		                String read = new String(b, 0, i, "UTF-8");
+		                sb.append(read);
+		            }
+		            // 关闭和第三方建立的连接通道
+		            is.close();
+		            
+		            // 从返回信息中，获取要获取的字段信息
+		            JSONObject json = JSONObject.fromObject(sb.toString());
+		            if (messageName.isEmpty()) {
+		                messageName = json.toString();
+		            } else {
+		                messageName = json.get(messageName).toString();
+		            }
+				   
+			} catch (Exception e) {
+				e.printStackTrace();
+			}  
+			   
+		}
+		
+		return messageName;
+	}
+
+	public static JSONObject getWeiXinInfoJSON(String webRefreshAccessTokenURL) throws Exception {
+		
+		  // 链接
+        URL getUrl = null;
+
+        // 创建一个管理证书的任务管理器
+       // TrustManager[] tm = { new gds.office.weixin.weixin.dto.MyX509TrustManager() };
+
+        // 创建SSL安全链接
+        SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
+        //sslContext.init(null, tm, new java.security.SecureRandom());
+        sslContext.init(null, null, new java.security.SecureRandom());
+        // 从上述SSLContext对象中得到SSLSocketFactory对象
+        SSLSocketFactory ssf = sslContext.getSocketFactory();
+
+        // 根据URL链接第三方服务
+        // 和第三方服务建立连接通道
+        getUrl = new URL(webRefreshAccessTokenURL);
+        HttpsURLConnection http = (HttpsURLConnection) getUrl.openConnection();
+        http.setSSLSocketFactory(ssf);
+        http.setRequestMethod("GET");
+        http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        http.setDoOutput(true);
+        http.setDoInput(true);
+        http.connect();
+
+        // 获取访问URL获取的信息
+        InputStream is = http.getInputStream();
+        StringBuilder sb = new StringBuilder();
+        
+        // 读取缓存流
+        String line ;
+        BufferedReader  in = new BufferedReader( new InputStreamReader(is,"UTF-8") );
+        while( (line = in.readLine()) != null ){
+        	sb.append(line);
+        }
+
+        // 关闭和第三方建立的连接通道
+        is.close();
+
+        // 从返回信息中，获取要获取的字段信息
+        JSONObject json = JSONObject.fromObject(sb.toString());
+		
+		return json;
+	}
 
 }

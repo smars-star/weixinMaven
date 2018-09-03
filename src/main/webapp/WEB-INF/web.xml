@@ -24,10 +24,10 @@
 	</listener>
 
 
-	<!-- 获取微信access_token监听 -->
+	<!-- 获取微信access_token监听 
 	<listener>
 		<listener-class>com.application.weixin.listener.WeiXinAccessTokenListener</listener-class>
-	</listener>
+	</listener>-->
 
 	<!-- 设置字体编码格式过滤器 -->
 	<filter>
@@ -63,6 +63,20 @@
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 	<!-- 部署weixinMaven配置end -->
+	
+	
+  <filter>
+	  	<filter-name>DruidWebStatFilter</filter-name>
+	  	<filter-class>com.alibaba.druid.support.http.WebStatFilter</filter-class>
+	  	<init-param>
+	  		<param-name>exclusions</param-name>
+	  		<param-value>*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*</param-value>
+	  	</init-param>
+  </filter>
+  <filter-mapping>
+  	<filter-name>DruidWebStatFilter</filter-name>
+  	<url-pattern>/*</url-pattern>
+  </filter-mapping> 
 
 	<display-name>weixinMaven</display-name>
 	<welcome-file-list>
