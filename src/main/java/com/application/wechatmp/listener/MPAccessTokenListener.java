@@ -9,13 +9,14 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.springframework.util.StringUtils;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 
 
 
-import com.alibaba.druid.util.StringUtils;
 import com.application.framework.util.AppSettingFactory;
 import com.application.wechatmp.dto.WeixinPublicEmployeeDTO;
 import com.application.weixin.util.WeiXinUtils;

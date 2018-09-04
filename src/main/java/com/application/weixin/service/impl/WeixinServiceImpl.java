@@ -15,6 +15,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.application.common.department.dto.DepartmentDTO;
@@ -64,6 +65,7 @@ public class WeixinServiceImpl implements WeixinService{
      * @return List<WeixinDepartmentDTO> 返回微信通讯录部门信息集合
 	 * @throws Exception 
      */
+    @Cacheable(value="cacheTest",key="#param")
     @SuppressWarnings({ "static-access", "unchecked" })
     @Override
     public List<WeixinDepartmentDTO> findWeixinDepList(){
@@ -93,6 +95,7 @@ public class WeixinServiceImpl implements WeixinService{
       * @param userid  员工Id
       * @return List<WeixinDepartmentDTO> 返回微信通讯录人员信息
       */
+    @Cacheable(value="cacheTest",key="#userid")
     @SuppressWarnings("static-access")
     @Override
     public WeixinEmployeeDTO getWeixinEmployee(String userid) {

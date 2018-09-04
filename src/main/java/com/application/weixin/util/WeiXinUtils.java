@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,11 +21,11 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import net.sf.json.JSONObject;
-
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.StringUtils;
 
 import com.application.weixin.dto.WeixinMessageDTO;
+
+import net.sf.json.JSONObject;
 
 /**
  * 微信WeixinUtil工具类
@@ -236,63 +235,63 @@ public class WeiXinUtils{
      * @return String 返回访问企业微信失败时的提示信息
      * @throws Exception
      */
-    @SuppressWarnings("static-access")
-    public static String sendHttpWeixinBodyByGet(String url, String str, String errmsg){
-        //获取返回JSON数据对象
-        JSONObject json = null; 
-        
-        try {
-            // 创建一个管理证书的任务管理器
-            // TrustManager[] tm = { new
-            // gds.office.weixin.weixin.dto.MyX509TrustManager() };
-            SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
-            sslContext.init(null, null, new java.security.SecureRandom());
+	@SuppressWarnings("static-access")
+	public static String sendHttpWeixinBodyByGet(String url, String str, String errmsg) {
+		// 获取返回JSON数据对象
+		JSONObject json = null;
 
-            // 从上述SSLContext对象中得到SSLSocketFactory对象
-            SSLSocketFactory ssf = sslContext.getSocketFactory();
-            URL getUrl = null;
+		try {
+			// 创建一个管理证书的任务管理器
+			// TrustManager[] tm = { new
+			// gds.office.weixin.weixin.dto.MyX509TrustManager() };
+			SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
+			sslContext.init(null, null, new java.security.SecureRandom());
 
-            // 打开URL链接
-            getUrl = new URL(url);
-            HttpsURLConnection http = (HttpsURLConnection) getUrl.openConnection();
-            http.setSSLSocketFactory(ssf);
+			// 从上述SSLContext对象中得到SSLSocketFactory对象
+			SSLSocketFactory ssf = sslContext.getSocketFactory();
+			URL getUrl = null;
 
-            http.setRequestMethod("GET");
-            http.setRequestProperty("Content-Type", "application/json;charset=utf-8");
-            http.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
-            http.setRequestProperty("Charset", "UTF-8");
-            http.setDoOutput(true);
-            http.setDoInput(true);
-            http.connect();
+			// 打开URL链接
+			getUrl = new URL(url);
+			HttpsURLConnection http = (HttpsURLConnection) getUrl.openConnection();
+			http.setSSLSocketFactory(ssf);
 
-            // 建立输入流，向指向的URL传入参数
-            if (!StringUtils.isEmpty(str)) {
-                JSONObject jsonObject = new JSONObject().fromObject(str);
-                OutputStreamWriter osw = new OutputStreamWriter(http.getOutputStream(), "UTF-8");
-                osw.write(jsonObject.toString());
-                osw.flush();
-                osw.close();
-            }
+			http.setRequestMethod("GET");
+			http.setRequestProperty("Content-Type", "application/json;charset=utf-8");
+			http.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
+			http.setRequestProperty("Charset", "UTF-8");
+			http.setDoOutput(true);
+			http.setDoInput(true);
+			http.connect();
 
-            // 这句才是真正发送请求
-            http.getInputStream();
+			// 建立输入流，向指向的URL传入参数
+			if (!StringUtils.isEmpty(str)) {
+				JSONObject jsonObject = new JSONObject().fromObject(str);
+				OutputStreamWriter osw = new OutputStreamWriter(http.getOutputStream(), "UTF-8");
+				osw.write(jsonObject.toString());
+				osw.flush();
+				osw.close();
+			}
 
-            // 返回信息
-            InputStream is = http.getInputStream();
-            int size = is.available();
-            byte[] b = new byte[size];
-            is.read(b);
-            is.close();
-            String message = new String(b, "UTF-8");
-            json = JSONObject.fromObject(message);
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        // 返回访问企业微信失败时的提示信息
-        return json.get(errmsg).toString();
-    }
+			// 这句才是真正发送请求
+			http.getInputStream();
+
+			// 返回信息
+			InputStream is = http.getInputStream();
+			int size = is.available();
+			byte[] b = new byte[size];
+			is.read(b);
+			is.close();
+			String message = new String(b, "UTF-8");
+			json = JSONObject.fromObject(message);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// 返回访问企业微信失败时的提示信息
+		return json.get(errmsg).toString();
+	}
 
     /**
      * 获取人员微信头像
@@ -360,68 +359,68 @@ public class WeiXinUtils{
 	 * @return
 	 * @throws Exception
 	 */
-	public static  String   getWeiXinInfoByPost(String url,JSONObject jsonObject,String messageName) {
-		
+	public static String getWeiXinInfoByPost(String url, JSONObject jsonObject, String messageName) {
+
 		HttpsURLConnection http = null;
-		if(!url.isEmpty()){
-		     try {
-					URL getUrl = null;
-					
-					// 创建一个管理证书的任务管理器
-				   //TrustManager[] tm = { new gds.office.weixin.weixin.dto.MyX509TrustManager() };
-					//SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
-					//sslContext.init(null, tm, new java.security.SecureRandom());
-					// 从上述SSLContext对象中得到SSLSocketFactory对象
-					//SSLSocketFactory ssf = sslContext.getSocketFactory();
-					
-					//3. 打开URL链接
-					getUrl = new URL(url);
-					http = (HttpsURLConnection) getUrl.openConnection();
-					//((HttpsURLConnection) http).setSSLSocketFactory(ssf);
-					http.setRequestMethod("POST");
-					http.setRequestProperty("Content-Type", "application/json;charset=utf-8"); 
-					http.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
-					http.setRequestProperty("Charset", "UTF-8");
-					http.setDoOutput(true);
-					http.setDoInput(true);
-					http.connect();
-					
-					//4.1建立输入流，向指向的URL传入参数
-					OutputStreamWriter   osw = new OutputStreamWriter(http.getOutputStream(), "UTF-8");
-					osw.write(jsonObject.toString());
-					osw.flush();
-					osw.close();
-				    
-				   // 4.2这句才是真正发送请求  
-				   http.getInputStream();
-				   
-				   
-					// 获取访问URL获取的信息
-		            InputStream is = http.getInputStream();
-		            StringBuilder sb = new StringBuilder();
-		            int i = 0;
-		            byte[] b = new byte[1024];
-		            while ((i = is.read(b)) != -1) {
-		                String read = new String(b, 0, i, "UTF-8");
-		                sb.append(read);
-		            }
-		            // 关闭和第三方建立的连接通道
-		            is.close();
-		            
-		            // 从返回信息中，获取要获取的字段信息
-		            JSONObject json = JSONObject.fromObject(sb.toString());
-		            if (messageName.isEmpty()) {
-		                messageName = json.toString();
-		            } else {
-		                messageName = json.get(messageName).toString();
-		            }
-				   
+		if (!url.isEmpty()) {
+			try {
+				URL getUrl = null;
+
+				// 创建一个管理证书的任务管理器
+				// TrustManager[] tm = { new gds.office.weixin.weixin.dto.MyX509TrustManager()
+				// };
+				// SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
+				// sslContext.init(null, tm, new java.security.SecureRandom());
+				// 从上述SSLContext对象中得到SSLSocketFactory对象
+				// SSLSocketFactory ssf = sslContext.getSocketFactory();
+
+				// 3. 打开URL链接
+				getUrl = new URL(url);
+				http = (HttpsURLConnection) getUrl.openConnection();
+				// ((HttpsURLConnection) http).setSSLSocketFactory(ssf);
+				http.setRequestMethod("POST");
+				http.setRequestProperty("Content-Type", "application/json;charset=utf-8");
+				http.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
+				http.setRequestProperty("Charset", "UTF-8");
+				http.setDoOutput(true);
+				http.setDoInput(true);
+				http.connect();
+
+				// 4.1建立输入流，向指向的URL传入参数
+				OutputStreamWriter osw = new OutputStreamWriter(http.getOutputStream(), "UTF-8");
+				osw.write(jsonObject.toString());
+				osw.flush();
+				osw.close();
+
+				// 4.2这句才是真正发送请求
+				http.getInputStream();
+
+				// 获取访问URL获取的信息
+				InputStream is = http.getInputStream();
+				StringBuilder sb = new StringBuilder();
+				int i = 0;
+				byte[] b = new byte[1024];
+				while ((i = is.read(b)) != -1) {
+					String read = new String(b, 0, i, "UTF-8");
+					sb.append(read);
+				}
+				// 关闭和第三方建立的连接通道
+				is.close();
+
+				// 从返回信息中，获取要获取的字段信息
+				JSONObject json = JSONObject.fromObject(sb.toString());
+				if (messageName.isEmpty()) {
+					messageName = json.toString();
+				} else {
+					messageName = json.get(messageName).toString();
+				}
+
 			} catch (Exception e) {
 				e.printStackTrace();
-			}  
-			   
+			}
+
 		}
-		
+
 		return messageName;
 	}
 

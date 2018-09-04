@@ -6,32 +6,39 @@ package com.application.weixin.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.application.framework.base.controller.BaseController;
 import com.application.framework.util.AppSettingFactory;
+import com.application.weixin.constant.PhoneWarningConstant;
 import com.application.weixin.dto.WeixinDepartmentDTO;
 import com.application.weixin.dto.WeixinEmployeeDTO;
+import com.application.weixin.dto.WeixinPublicEmployeeDTO;
+import com.application.weixin.listener.WeiXinAccessTokenListener;
 import com.application.weixin.service.WeixinService;
 import com.application.weixin.util.AesException;
-import com.application.weixin.util.QRCodeUtils;
 import com.application.weixin.util.SHA1;
 import com.application.weixin.util.WeiXinUtils;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+
 
 /**
  * 微信Controller.java : 微信测系统，主要包括微信的access_token、管理通讯录、发送微信消息、微信JS-SDK等操作。
@@ -52,10 +59,8 @@ public class WeixinController extends BaseController {
 	/**
 	 * 查询企业微信上所有的人员信息
 	 * 
-	 * @param attr
-	 *            RedirectAttributes 重定向
-	 * @param model
-	 *            Model对象用于设置页面数据
+	 * @param attr RedirectAttributes 重定向
+	 * @param model Model对象用于设置页面数据
 	 * @return String 跳转页面
 	 * @throws Exception
 	 */
@@ -116,13 +121,11 @@ public class WeixinController extends BaseController {
 	/**
 	 * 初始化修改企业微信通讯录人员信息页面
 	 * 
-	 * @param model
-	 *            Model对象用于设置页面数据
-	 * @param aMap
-	 *            Map 对象页面传入参数集合：
-	 *            <p>
-	 *            <li>key=userid 企业微信用户Id</li>
-	 *            </p>
+	 * @param model Model对象用于设置页面数据
+	 * @param aMap Map 对象页面传入参数集合：
+	 * <p>
+	 *   <li>key=userid 企业微信用户Id</li>
+	 * </p>
 	 * @return String 跳转页面
 	 * @throws Exception
 	 */
@@ -146,10 +149,8 @@ public class WeixinController extends BaseController {
 	/**
 	 * 更新微信通讯录人员信息
 	 * 
-	 * @param model
-	 *            Model对象用于设置页面数据
-	 * @param weixinEmployeeDTO
-	 *            企业微信人员DTO
+	 * @param model Model对象用于设置页面数据
+	 * @param weixinEmployeeDTO 企业微信人员DTO
 	 * @return String 跳转页面
 	 * @throws Exception
 	 */
@@ -182,10 +183,8 @@ public class WeixinController extends BaseController {
 	/**
 	 * 删除人员信息
 	 * 
-	 * @param model
-	 *            Model对象用于设置页面数据
-	 * @param userid
-	 *            企业微信用户Id
+	 * @param model  Model对象用于设置页面数据
+	 * @param userid 企业微信用户Id
 	 * @return String 跳转页面
 	 * @throws Exception
 	 */
@@ -216,8 +215,7 @@ public class WeixinController extends BaseController {
 	/**
 	 * 初始化添加企业微信通讯录人员页面
 	 * 
-	 * @param model
-	 *            Model对象用于设置页面数据
+	 * @param model Model对象用于设置页面数据
 	 * @return String 跳转页面
 	 * @throws Exception
 	 */
@@ -326,10 +324,8 @@ public class WeixinController extends BaseController {
 	/**
 	 * 删除企业微信部门信息
 	 * 
-	 * @param model
-	 *            Model对象用于设置页面数据
-	 * @param depID
-	 *            部门ID
+	 * @param model Model对象用于设置页面数据
+	 * @param depID 部门ID
 	 * @return String 跳转页面
 	 * @throws ConstantToMapException
 	 */
@@ -478,78 +474,220 @@ public class WeixinController extends BaseController {
 		}
 
 	}
+	
+	
+	  /**
+     *  发送微信公众号消息
+     * @param request
+     * @param response
+	 * @param paramsMap HashMap<String, String> 对象页面传入参数集合：
+	 * <p>
+	 * <li>key=warningType 警告类型： alarm(告警)、early(预警)</li>
+	 * <li>key=userOpenID 发送派警用户openid</li>
+	 * <li>key=warningID 对象警告ID</li>
+	 * </p>
+     * @throws Exception  抛出异常
+     */
+    @ResponseBody  
+    @RequestMapping(value = "/sendUsersMessage.do")  
+    public void  sendUsersMessage(HttpServletResponse response, @RequestParam HashMap<String, String> paramsMap,@RequestBody String param) {
+    	// 初始化AppSettingFactory
+    	AppSettingFactory  appSettingFactory = AppSettingFactory.getInstance();
+    	// 消息提示内容 默认失败
+    	String messageContent = "faile";
+		try {
+			// 获取微信公众号模板URL链接
+			String url = appSettingFactory.getAppSetting("public_weixin_messageTemplateURL")+WeiXinAccessTokenListener.access_token;
+	    	
+			// 获取微信公众号消息JSON 内容
+	    	JSONObject  messageJSONObject  = getWeixinPublicMessageData(paramsMap,param);
+	    	
+	    	// 发送微信公众号消息
+    		HttpsURLConnection httpsURLConnection = null;
+	    	// 预警
+	    	if( PhoneWarningConstant.PHONE_WARNING_EARLY.equals(paramsMap.get("warningType")) ){
+	    		// 获取微信公众号关注人员集合
+	    		//List<WeixinPublicEmployeeDTO> employeeList  = this.phoneWarningServiceImpl.findWeixinPublicEmployeeList(AppSettingFactory.getInstance().getAppSetting("pubic_weixin_phoneWarnGroupid"));
+	    		List<WeixinPublicEmployeeDTO> employeeList  = null;
+	    		for( int i = 0; i < employeeList.size(); i++){
+	    			// 获取发送消息人DTO信息
+	    			WeixinPublicEmployeeDTO  weixinPublicEmployeeDTO = employeeList.get(i);
+	    			
+	    			// 设置发送人openid
+	    			JSONObject tempJSON = JSONObject.fromObject(messageJSONObject);
+	    			tempJSON.put("touser", weixinPublicEmployeeDTO.getOpenid());
+	    			 
+	    			// 发送微信公众号消息
+			    	//httpsURLConnection = WeiXinUtils.sendWeixinTemplateMessageByPost(url,tempJSON);
+			    	System.out.println("预警发送消息,第"+ i +"个JSON内容："+tempJSON);
+	    		}
+	    		
+	    	}else{ // 告警
+		    	System.out.println("开始发送消息JSON内容："+messageJSONObject);
+	    		// 发送微信公众号消息
+	    	    //httpsURLConnection = WeiXinUtils.sendWeixinTemplateMessageByPost(url,messageJSONObject);
+	    	}
+	    	
+			
+			// 返回消息执行后JSON
+			messageJSONObject = new JSONObject();
+			
+			// 获取发送微信公众号消息状态返回值
+			int httpResponseCode = httpsURLConnection.getResponseCode();
+			if(httpResponseCode == 200){
+				messageContent = PhoneWarningConstant.STATE_CODE_success ;
+			}
+			
+			// 设置执行发送消息码值
+			messageJSONObject.put(PhoneWarningConstant.STATE_CODE, httpResponseCode);
+			// 设置执行发送消息与否内容
+			messageJSONObject.put(PhoneWarningConstant.MESSAGE, messageContent);
+			
+    		System.out.println("结束发送消息内容："+messageJSONObject);
+			
+			//设置JSON数据跨域 编码
+			WeiXinUtils.setResponseContent(response);
+			response.getWriter().write(messageJSONObject.toString());
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		   
+    }
+    
+   /**
+     *  封装微信公众号消息内容JSON
+     * @param paramsMap  HashMap<String, String> 参数集合
+	 * <p>
+	 * <li>key=warningType 警告类型： alarm(告警)、early(预警)</li>
+	 * <li>key=userOpenID 发送派警用户openid</li>
+	 * <li>key=warningID 对象警告ID</li>
+	 * </p>
+     * @param param String独享为JSON字符串
+     * @return 返回微信公众号消息JSON
+     * @throws AppException  抛出异常
+     */
+    private JSONObject getWeixinPublicMessageData(HashMap<String, String> paramsMap, String param){
 
-	/**
-	 * 生成微信获取登录二维码
-	 * 
-	 * @param response
-	 * @throws Exception
-	 *             抛出异常
-	 */
-	@SuppressWarnings("deprecation")
-	@RequestMapping("/createWeixinLoginQRcode")
-	public void createWeixinLoginQRcode(HttpServletResponse response) throws Exception {
-		AppSettingFactory appSettingFactory = AppSettingFactory.getInstance();
+    	// 警告类型
+    	String warningType = "";
+    	// 获取模板消息ID
+    	String  template_id = "";
+    	// 消息URL链接
+    	String messgeURL = "";
+    	// 消息接收人openid
+    	String userOpenID = "";
+    	// 消息标题
+    	String title = "";
+    	// 告警1
+    	String keyword1 = "";
+    	// 告警2
+    	String keyword2 = "";
+        // 备注信息
+    	String  remark = "";
+    	
+    	// 获取告警类型
+    	warningType = paramsMap.get("warningType");
+    	
+    	// 预警
+    	if( PhoneWarningConstant.PHONE_WARNING_EARLY.equals(warningType) ){
+    		
+    		// 获取模板消息ID
+	        template_id = AppSettingFactory.getInstance().getAppSetting("public_weixin_messageTemplateID_yjts");
+	        
+            JSONObject paramObject = JSONObject.fromObject(param);
+	        // 消息链接URL
+	        messgeURL = paramObject.get("messgeURL").toString();
+	        
+	        // 告警title
+	        title = paramObject.get("title").toString();
+	        
+	        // 告警内容
+	        keyword1 = paramObject.get("warningContent").toString();
+	        
+	        // 告警时间
+	        keyword2 = paramObject.get("warningTime").toString();
+	        
+	        // 告警备注信息 
+	        remark  = paramObject.get("remark").toString();
+	        
+    	}
 
-		// 获取获取微信公众号用户信息的方法链接
-		String getWeixinURL = appSettingFactory.getAppSetting("phoneWarningDomainURL")
-				+ "/mobileMonitoring/phoneWarningWeixin/getWeixinUserInfo.do";
+    	// 告警
+    	if( PhoneWarningConstant.PHONE_WARNING_ALARM.equals(warningType) ){
+    		
+    	 	// 获取模板消息ID
+	        template_id = AppSettingFactory.getInstance().getAppSetting("public_weixin_messageTemplateID_gjts");
+	    	
+	        /*
+	        
+	    	// 获取告警信息DTO集合
+		    PhoneWarningDTO  phoneWarningDTO = this.phoneWarningServiceImpl.getPhoneWarningDTO(paramsMap.get("warningID").toString());
+	    	    	
+	    	// 获取微信内置地图导航链接
+	        messgeURL =  "http://apis.map.qq.com/uri/v1/marker?marker=coord:"+phoneWarningDTO.getWarninglon()+","+phoneWarningDTO.getWarninglat();
 
-		// 获取生成二维码内容
-		String urlContent = appSettingFactory.getAppSetting("public_weixin_webAuthorizeURLStart")
-				+ appSettingFactory.getAppSetting("public_weixin_appID") + "&redirect_uri="
-				+ java.net.URLEncoder.encode(getWeixinURL)
-				+ appSettingFactory.getAppSetting("public_weixin_webAuthorizeURLEnd");
-
-		// 生成微信公众号登录二维码
-		String base64Img = QRCodeUtils.getBASE64AppQRCode(urlContent, 200, 202, "jpg");
-
-		// 设置JSON数据跨域乱码
-		WeiXinUtils.setResponseContent(response);
-		response.getWriter().write(base64Img);
+	        // 告警title
+	        title = phoneWarningDTO.getWarningTypeName() +"告警：";
+	        
+	        // 告警时间
+	        keyword1 = phoneWarningDTO.getCreatetime();
+	        
+	        // 告警内容
+	        keyword2  = phoneWarningDTO.getDistrict()+phoneWarningDTO.getTown()+phoneWarningDTO.getVillage()
+		    		+"【"+ phoneWarningDTO.getLongitude()+"，"+phoneWarningDTO.getLatitude() +"】发生"
+		    		+"【"+ phoneWarningDTO.getWarningTypeName() +"】告警，请立即前往查看。";
+	        */
+	        
+	        // 备注信息
+	        remark =  "点击链接导航至告警点：" + messgeURL;
+	        
+	        userOpenID = paramsMap.get("userOpenID").toString();
+    	}
+    	
+    	// 封装公众号模板消息
+    	JSONObject jsonObject = new JSONObject();
+    	// 消息接收人openID
+    	jsonObject.put("touser", userOpenID);
+    	// 消息模板ID
+    	jsonObject.put("template_id", template_id);
+    	// 消息模板链接
+    	jsonObject.put("url", messgeURL);
+    	// 头部颜色
+    	jsonObject.put("topcolor", "#FF0000");
+    	
+    	// 消息模板内容
+        JSONObject  jsonData= new JSONObject();
+    	
+    	// 消息模块first.DATA
+    	JSONObject  jsonObjectFristValue = new JSONObject();
+    	jsonObjectFristValue.put("value", title);
+    	jsonObjectFristValue.put("color", "#FF0000");
+    	jsonData.put("first", jsonObjectFristValue);
+    	
+    	// 消息模块keyword1.DATA
+        JSONObject  jsonObjectkeyword1 = new JSONObject();
+    	jsonObjectkeyword1.put("value", keyword1);
+    	jsonObjectkeyword1.put("color", "#FF0000");
+    	jsonData.put("keyword1", jsonObjectkeyword1);
+    	
+    	// 消息模块keyword2.DATA
+    	JSONObject  jsonObjectkeyword2 = new JSONObject();
+    	jsonObjectkeyword2.put("value", keyword2);
+    	jsonObjectkeyword2.put("color", "#FF0000");
+    	jsonData.put("keyword2", jsonObjectkeyword2);
+    	
+    	// 消息备注remark.DATA
+    	JSONObject  remarkJsonObject = new JSONObject();
+    	remarkJsonObject.put("value", remark );
+    	remarkJsonObject.put("color", "#173177");
+    	jsonData.put("remark", remarkJsonObject);
+    	
+    	jsonObject.put("data", jsonData);
+    	
+    	// 返回微信公众号消息JSON
+    	return jsonObject;
 	}
 
-	/**
-	 * 获取微信公众号当前人员信息
-	 * 
-	 * @param request
-	 * @param response
-	 * @throws Exception
-	 *             抛出异常
-	 */
-	@ResponseBody
-	@RequestMapping("/getWeixinUserInfo.do")
-	public void getWeixinUserInfo(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		AppSettingFactory appSettingFactory = AppSettingFactory.getInstance();
-
-		// 获取code
-		String code = request.getParameter("code");
-
-		// 网页授权获取网页refresh_token链接 public_weixin_webAuthorizeRefreshAccessTokenURL
-		String webRefreshAccessTokenURL = appSettingFactory
-				.getAppSetting("public_weixin_webAuthorizeRefreshAccessTokenURL")
-				+ appSettingFactory.getAppSetting("public_weixin_appID") + "&secret="
-				+ appSettingFactory.getAppSetting("public_weixin_appsecret") + "&code=" + code
-				+ "&grant_type=authorization_code";
-
-		// 获取refresh_token
-		JSONObject userJSON = WeiXinUtils.getWeiXinInfoJSON(webRefreshAccessTokenURL);
-		// 获取微信公众号用户openid
-		String openid = userJSON.getString("openid");
-		// 获取授权accessToken(有效时间为两小时)
-		String access_token = userJSON.getString("access_token");
-
-		// 获取微信公众号用户信息链接
-		String userinfoRUL = appSettingFactory.getAppSetting("public_weixin_webAuthorizeUserInfoURL") + access_token
-				+ "&openid=" + openid + "&lang=zh_CN";
-
-		// 获取刷新网页access_token后返回数据
-		JSONObject userInfoJSON = WeiXinUtils.getWeiXinInfoJSON(userinfoRUL);
-
-		// 设置JSON数据跨域乱码
-		WeiXinUtils.setResponseContent(response);
-		response.getWriter().write(userInfoJSON.toString());
-
-	}
 
 }
